@@ -32,6 +32,27 @@ function getDeviceInfo() {
         screenHeight: window.screen.height,
         colorDepth: window.screen.colorDepth,
         cookiesEnabled: navigator.cookieEnabled,
+        deviceType: getDeviceType(),
+        documentTitle: document.title,
+        documentURL: window.location.href,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+        screenOrientation: window.screen.orientation.type,
+        dateTime: new Date().toString(),
+        webglAvailable: !!navigator.webgl,
+        mediaDevices: navigator.mediaDevices ? 'Supported' : 'Not supported',
+        batteryStatus: navigator.getBattery ? 'Supported' : 'Not supported',
+        touchSupport: navigator.maxTouchPoints ? navigator.maxTouchPoints : 'Not supported',
+        pointerEvents: window.PointerEvent ? 'Supported' : 'Not supported',
+        credentialsSupport: !!navigator.credentials,
+        onlineStatus: navigator.onLine ? 'Online' : 'Offline',
+        hardwareConcurrency: navigator.hardwareConcurrency,
+        webWorkers: !!window.Worker ? 'Supported' : 'Not supported',
+        deviceMemory: navigator.deviceMemory,
+        webAssemblySupport: !!WebAssembly.validate ? 'Supported' : 'Not supported',
+        webSpeechAPISupport: !!window.speechSynthesis ? 'Supported' : 'Not supported'
     };
 
     // Get browser information
@@ -76,39 +97,27 @@ function displayInformation(device, browser, connection, location) {
     tableBody.innerHTML = '';
 
     // Add device information to the table
-    addRowToTable(tableBody, 'User Agent', device.userAgent);
-    addRowToTable(tableBody, 'Platform', device.platform);
-    addRowToTable(tableBody, 'Language', device.language);
-    addRowToTable(tableBody, 'Screen Width', device.screenWidth);
-    addRowToTable(tableBody, 'Screen Height', device.screenHeight);
-    addRowToTable(tableBody, 'Color Depth', device.colorDepth);
-    addRowToTable(tableBody, 'Cookies Enabled', device.cookiesEnabled);
+    for (const [key, value] of Object.entries(device)) {
+        addRowToTable(tableBody, key, value);
+    }
 
     // Add browser information to the table
-    addRowToTable(tableBody, 'Browser Name', browser.appName);
-    addRowToTable(tableBody, 'Browser Version', browser.appVersion);
-    addRowToTable(tableBody, 'Product', browser.product);
-    addRowToTable(tableBody, 'Product Sub', browser.productSub);
-    addRowToTable(tableBody, 'Vendor', browser.vendor);
-    addRowToTable(tableBody, 'Vendor Sub', browser.vendorSub);
+    for (const [key, value] of Object.entries(browser)) {
+        addRowToTable(tableBody, key, value);
+    }
 
     // Add network information to the table
     if (connection) {
-        addRowToTable(tableBody, 'Network Type', connection.type);
-        addRowToTable(tableBody, 'Effective Type', connection.effectiveType);
+        for (const [key, value] of Object.entries(connection)) {
+            addRowToTable(tableBody, key, value);
+        }
     }
 
     // Add location information to the table if available
     if (location) {
-        addRowToTable(tableBody, 'IP Address', location.ip);
-        addRowToTable(tableBody, 'City', location.city);
-        addRowToTable(tableBody, 'Region', location.region);
-        addRowToTable(tableBody, 'Country', location.country);
-
-        // Extract latitude and longitude from the "loc" property
-        const [latitude, longitude] = location.loc.split(',');
-        addRowToTable(tableBody, 'Latitude', latitude);
-        addRowToTable(tableBody, 'Longitude', longitude);
+        for (const [key, value] of Object.entries(location)) {
+            addRowToTable(tableBody, key, value);
+        }
     }
 }
 
@@ -118,6 +127,18 @@ function addRowToTable(tableBody, property, value) {
     const cell2 = row.insertCell(1);
     cell1.textContent = property;
     cell2.textContent = value;
+}
+
+function getDeviceType() {
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (userAgent.match(/(mobile|android)/)) {
+        return 'Mobile';
+    } else if (userAgent.match(/(tablet|ipad)/)) {
+        return 'Tablet';
+    } else {
+        return 'Desktop';
+    }
 }
 </script>
 
